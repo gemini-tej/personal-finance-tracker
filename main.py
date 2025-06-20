@@ -1,6 +1,6 @@
 import json
 import datetime
-from typing import List, Dict, Optional
+from typing import List, Dict
 from dataclasses import dataclass
 from enum import Enum
 
@@ -71,31 +71,6 @@ class FinanceTracker:
             else:
                 balance -= transaction.amount
         return balance
-    
-    def get_monthly_summary(self, year: int, month: int) -> Dict:
-        monthly_transactions = [
-            t for t in self.transactions 
-            if t.date.year == year and t.date.month == month
-        ]
-        
-        income = sum(t.amount for t in monthly_transactions 
-                    if t.transaction_type == TransactionType.INCOME)
-        expenses = sum(t.amount for t in monthly_transactions 
-                      if t.transaction_type == TransactionType.EXPENSE)
-        
-        category_breakdown = {}
-        for transaction in monthly_transactions:
-            if transaction.category not in category_breakdown:
-                category_breakdown[transaction.category] = 0
-            if transaction.transaction_type == TransactionType.EXPENSE:
-                category_breakdown[transaction.category] += transaction.amount
-        
-        return {
-            'income': income,
-            'expenses': expenses,
-            'net': income - expenses,
-            'category_breakdown': category_breakdown
-        }
 
 def main():
     tracker = FinanceTracker()
@@ -105,8 +80,7 @@ def main():
         print("1. Add Income")
         print("2. Add Expense") 
         print("3. View Balance")
-        print("4. Monthly Summary")
-        print("5. Exit")
+        print("4. Exit")
         
         choice = input("Choose an option: ")
         
@@ -127,20 +101,8 @@ def main():
         elif choice == '3':
             balance = tracker.get_balance()
             print(f"Current balance: ${balance:.2f}")
-            
-        elif choice == '4':
-            year = int(input("Enter year: "))
-            month = int(input("Enter month: "))
-            summary = tracker.get_monthly_summary(year, month)
-            print(f"\nMonthly Summary for {month}/{year}:")
-            print(f"Income: ${summary['income']:.2f}")
-            print(f"Expenses: ${summary['expenses']:.2f}")
-            print(f"Net: ${summary['net']:.2f}")
-            print("Category Breakdown:")
-            for category, amount in summary['category_breakdown'].items():
-                print(f"  {category}: ${amount:.2f}")
                 
-        elif choice == '5':
+        elif choice == '4':
             break
         else:
             print("Invalid option!")
